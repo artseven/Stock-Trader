@@ -6,11 +6,15 @@
 
 <script>
 import Stock from './Stock.vue'
-import stocks from '../../data/stocks';
 
 export default {
 	components: {
 		Stock
+	},
+	computed: {
+		stocks() {
+			return this.$store.getters.stocks;
+		}
 	}
 }
 </script>
