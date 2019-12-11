@@ -1,10 +1,12 @@
 <template>
   <div class="col-sm-6 col-md-4">
-    <div class="panel panel-success">
+    <div class="panel panel-info">
       <div class="panel-heading">
         <h3 class="panel-title">
           {{ stock.name }}
-          <small>(Price: {{ stock.price }} | Quantity: {{ stock.quantity }})</small>
+          <small
+            >(Price: {{ stock.price }} | Quantity: {{ stock.quantity }})</small
+          >
         </h3>
       </div>
       <div class="panel-body">
@@ -12,6 +14,7 @@
           <input
             type="number"
             class="form-control"
+            :class="{ danger: insufficientQuantity }"
             placeholder="Quantity"
             v-model="quantity"
           />
@@ -20,9 +23,13 @@
           <button
             class="btn btn-danger"
             @click="sellSpecificStock"
-            :disabled="quantity <= 0 || Number.isInteger(quantity)"
+            :disabled="
+              insufficientQuantity ||
+                quantity <= 0 ||
+                Number.isInteger(quantity)
+            "
           >
-            Sell
+            {{ insufficientQuantity ? "Not enough shares" : "Sell" }}
           </button>
         </div>
       </div>
@@ -42,17 +49,26 @@ export default {
   methods: {
     ...mapActions(["sellStock"]),
     sellSpecificStock() {
-			console.log('stock', this.stock);
       const order = {
-      	stockId: this.stock.id,
+        stockId: this.stock.id,
         stockPrice: this.stock.price,
         quantity: this.quantity
-			};
-			//from store
+      };
+      //from store
       this.sellStock(order);
+      this.quantity = 0;
+    }
+  },
+  computed: {
+    insufficientQuantity() {
+      return this.quantity > this.stock.quantity;
     }
   }
 };
 </script>
 
-<style></style>
+<style scoped>
+.danger {
+  border: 1px solid red;
+}
+</style>
