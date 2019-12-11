@@ -29,7 +29,7 @@
           <li
             class="dropdown"
             :class="{ open: isDropdownOpen }"
-            @click="isDropdownOpen = !isDropdownOpen"
+            @click="isDropdownOpen = !isDropdownOpen; $event.preventDefault()"
           >
             <a
               href="#"
@@ -41,8 +41,8 @@
               >Save & Load <span class="caret"></span
             ></a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Save Data</a></li>
-              <li><a class="dropdown-item" href="#">Load Data</a></li>
+              <li><a class="dropdown-item" href="#" @click="saveData">Save Data</a></li>
+              <li><a class="dropdown-item" href="#" @click="loadDataFromDB">Load Data</a></li>
             </ul>
           </li>
         </ul>
@@ -64,10 +64,21 @@ export default {
     ...mapGetters(["funds"])
   },
   methods: {
-    ...mapActions(["randomizeStocks"]),
+    ...mapActions({randomizeStocks: 'randomizeStocks', fetchData: 'loadData'}),
     endDay(e) {
       e.preventDefault();
       this.randomizeStocks();
+    },
+    saveData() {
+      const data = {
+        funds: this.$store.getters.funds,
+        stockPortfolio: this.$store.getters.stockPortfolio,
+        stocks: this.$store.getters.stocks
+      }
+      this.$http.put('data.json', data);
+    },
+    loadDataFromDB() {
+      this.fetchData();
     }
   }
 };
